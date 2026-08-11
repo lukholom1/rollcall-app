@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sign in · Roll Call</title>
+<link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+<header class="top">
+  <div class="brand">
+    <div class="mark">RC</div>
+    <div><strong>Roll Call</strong></div>
+  </div>
+</header>
+<main style="max-width: 420px;">
+  <div class="card">
+    <h2 style="margin-bottom:4px;">Sign in</h2>
+    <p class="muted" style="margin:0 0 16px;">Use the email and password your admin gave you.</p>
+    <div class="field">
+      <label for="email">Email</label>
+      <input id="email" type="email" placeholder="name@school.org" autocomplete="username" />
+    </div>
+    <div class="field">
+      <label for="password">Password</label>
+      <input id="password" type="password" autocomplete="current-password" />
+    </div>
+    <div id="error" class="error" style="display:none;"></div>
+    <button class="btn" style="width:100%; margin-top:8px;" id="loginBtn">Sign in</button>
+  </div>
+  <p class="muted" style="text-align:center;">
+    Are you a learner or parent? <a href="/join.html">Enable class notifications here</a>.
+  </p>
+</main>
+<script>
+const errEl = document.getElementById("error");
+function showError(msg) { errEl.textContent = msg; errEl.style.display = "block"; }
+
+async function doLogin() {
+  errEl.style.display = "none";
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+  if (!email || !password) { showError("Enter your email and password."); return; }
+  const btn = document.getElementById("loginBtn");
+  btn.disabled = true;
+  try {
+    const res = await fetch("/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
+    const data = await res.json();
+    if (!res.ok) { showError(data.error || "Couldn't sign in."); return; }
+    localStorage.setItem("rc_token", data.token);
+    localStorage.setItem("rc_user", JSON.stringify(data.user));
+    window.location.href = "/dashboard.html";
+  } catch (e) {
+    showError("Couldn't reach the server. Try again.");
+  } finally {
+    btn.disabled = false;
+  }
+}
+document.getElementById("loginBtn").addEventListener("click", doLogin);
+document.getElementById("password").addEventListener("keydown", (e) => { if (e.key === "Enter") doLogin(); });
+</script>
+</body>
+</html>

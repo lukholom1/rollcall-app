@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Enable notifications · Roll Call</title>
+<link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+<header class="top">
+  <div class="brand">
+    <div class="mark">RC</div>
+    <div><strong>Roll Call</strong></div>
+  </div>
+</header>
+<main style="max-width: 420px;">
+  <div class="card">
+    <h2 style="margin-bottom:4px;">Enable notifications</h2>
+    <p class="muted" style="margin:0 0 16px;">Enter the join code your teacher or school gave you. It's usually written on a handout or shared in class.</p>
+    <div class="field">
+      <label for="code">Join code</label>
+      <input id="code" placeholder="ABC123" style="text-transform:uppercase; letter-spacing:2px;" />
+    </div>
+    <div id="lookupResult"></div>
+    <div id="error" class="error" style="display:none;"></div>
+    <button class="btn" style="width:100%;" id="findBtn">Find</button>
+  </div>
+</main>
+<script src="/join.js"></script>
+</body>
+</html>
