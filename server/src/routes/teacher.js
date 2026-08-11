@@ -240,16 +240,17 @@ router.post("/notifications", async (req, res) => {
   let rows = [];
   if (scope === "school") {
     if (aud === "learners" || aud === "both") {
+      // Anyone following any class in this school, or the school itself.
       const r = await query(
-        `SELECT s.* FROM push_subscriptions s JOIN push_targets t ON t.subscription_id = s.id
-         WHERE t.kind = 'school' AND t.school_id = $1`,
+        `SELECT DISTINCT s.* FROM push_subscriptions s JOIN push_targets t ON t.subscription_id = s.id
+         WHERE t.kind IN ('class','school') AND t.school_id = $1`,
         [req.user.schoolId]
       );
       rows = rows.concat(r.rows);
     }
     if (aud === "parents" || aud === "both") {
       const r = await query(
-        `SELECT s.* FROM push_subscriptions s JOIN push_targets t ON t.subscription_id = s.id
+        `SELECT DISTINCT s.* FROM push_subscriptions s JOIN push_targets t ON t.subscription_id = s.id
          WHERE t.kind = 'learner' AND t.school_id = $1`,
         [req.user.schoolId]
       );
@@ -258,7 +259,7 @@ router.post("/notifications", async (req, res) => {
   } else {
     if (aud === "learners" || aud === "both") {
       const r = await query(
-        `SELECT s.* FROM push_subscriptions s JOIN push_targets t ON t.subscription_id = s.id
+        `SELECT DISTINCT s.* FROM push_subscriptions s JOIN push_targets t ON t.subscription_id = s.id
          WHERE t.kind = 'class' AND t.class_id = ANY($1)`,
         [ids]
       );
@@ -266,7 +267,7 @@ router.post("/notifications", async (req, res) => {
     }
     if (aud === "parents" || aud === "both") {
       const r = await query(
-        `SELECT s.* FROM push_subscriptions s JOIN push_targets t ON t.subscription_id = s.id
+        `SELECT DISTINCT s.* FROM push_subscriptions s JOIN push_targets t ON t.subscription_id = s.id
          WHERE t.kind = 'learner' AND t.class_id = ANY($1)`,
         [ids]
       );
