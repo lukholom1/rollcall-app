@@ -3,8 +3,10 @@ CREATE TABLE IF NOT EXISTS schools (
   name TEXT NOT NULL,
   status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active','disabled')),
   join_code TEXT UNIQUE NOT NULL,
+  logo_data_url TEXT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+ALTER TABLE schools ADD COLUMN IF NOT EXISTS logo_data_url TEXT;
 
 CREATE TABLE IF NOT EXISTS users (
   id TEXT PRIMARY KEY,
