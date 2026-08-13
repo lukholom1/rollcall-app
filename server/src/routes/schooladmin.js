@@ -33,4 +33,12 @@ router.post("/staff", async (req, res) => {
   res.status(201).json({ id: teacherId, name: name.trim(), email: em, tempPassword: password });
 });
 
+router.patch("/logo", async (req, res) => {
+  const { logoDataUrl } = req.body || {};
+  if (!logoDataUrl) return res.status(400).json({ error: "No image provided." });
+  if (logoDataUrl.length > 500000) return res.status(400).json({ error: "That image is too large. Try a smaller logo." });
+  await query("UPDATE schools SET logo_data_url = $1 WHERE id = $2", [logoDataUrl, req.user.schoolId]);
+  res.json({ ok: true, logoDataUrl });
+});
+
 module.exports = router;
