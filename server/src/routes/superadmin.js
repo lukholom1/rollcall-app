@@ -19,9 +19,12 @@ router.get("/schools", async (req, res) => {
 });
 
 router.post("/schools", async (req, res) => {
-  const { name, adminName, adminEmail } = req.body || {};
+  const { name, adminName, adminEmail, logoDataUrl } = req.body || {};
   if (!name || !adminName || !adminEmail) {
     return res.status(400).json({ error: "Fill in the school name, admin name, and admin email." });
+  }
+  if (logoDataUrl && logoDataUrl.length > 500000) {
+    return res.status(400).json({ error: "That image is too large. Try a smaller logo." });
   }
   const email = adminEmail.trim().toLowerCase();
   const existing = await query("SELECT id FROM users WHERE email = $1", [email]);
@@ -32,10 +35,11 @@ router.post("/schools", async (req, res) => {
   const password = tempPassword();
   const hash = await hashPassword(password);
 
-  await query("INSERT INTO schools (id, name, status, join_code) VALUES ($1, $2, 'active', $3)", [
+  await query("INSERT INTO schools (id, name, status, join_code, logo_data_url) VALUES ($1, $2, 'active', $3, $4)", [
     schoolId,
     name.trim(),
     joinCode(),
+    logoDataUrl || null,
   ]);
   await query(
     "INSERT INTO users (id, role, name, email, password_hash, school_id) VALUES ($1, 'schooladmin', $2, $3, $4, $5)",
