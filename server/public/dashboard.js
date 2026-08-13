@@ -39,11 +39,60 @@ function roleLabel(role) {
   return role === "super" ? "Super admin" : role === "schooladmin" ? "School admin" : "Teacher";
 }
 
+// Resizes/compresses an uploaded image client-side before it's sent to the
+// server, so school logos stay small regardless of the original file size.
+function resizeImageToDataUrl(file, maxDim = 256) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error("Couldn't read that file."));
+    reader.onload = () => {
+      const img = new Image();
+      img.onerror = () => reject(new Error("That doesn't look like a valid image."));
+      img.onload = () => {
+        let { width, height } = img;
+        if (width > height && width > maxDim) {
+          height = Math.round(height * (maxDim / width));
+          width = maxDim;
+        } else if (height > maxDim) {
+          width = Math.round(width * (maxDim / height));
+          height = maxDim;
+        }
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        canvas.getContext("2d").drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL("image/png"));
+      };
+      img.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+let mySchool = null;
+
+async function loadSchoolBrand() {
+  if (user.role === "super") return;
+  const el = document.getElementById("schoolBrand");
+  try {
+    mySchool = await api("/api/school");
+    el.style.display = "flex";
+    el.innerHTML = mySchool.logoDataUrl
+      ? `<img src="${mySchool.logoDataUrl}" alt="${escapeHtml(mySchool.name)} emblem" style="width:30px;height:30px;border-radius:9px;object-fit:cover;" />`
+      : `<div style="width:30px;height:30px;border-radius:9px;background:rgba(255,255,255,0.25);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;">${escapeHtml(mySchool.name.slice(0, 2).toUpperCase())}</div>`;
+    el.innerHTML += `<span style="font-family:Georgia,serif; font-size:15px;">${escapeHtml(mySchool.name)}</span>`;
+  } catch (e) {
+    // Non-fatal - header just shows the Roll Call mark on its own.
+  }
+}
+
 document.getElementById("whoName").textContent = user.name;
 document.getElementById("whoEmail").textContent = user.email;
 const roleBadge = document.getElementById("roleBadge");
 roleBadge.textContent = roleLabel(user.role);
 roleBadge.className = "badge " + (user.role === "super" ? "amber" : user.role === "schooladmin" ? "slate" : "green");
+
+loadSchoolBrand();
 
 if (user.mustChangePassword) {
   renderPasswordChange();
@@ -107,6 +156,7 @@ async function renderSuperAdmin() {
           <div class="field"><label>Admin name</label><input id="sAdminName" placeholder="Jordan Lee" /></div>
           <div class="field"><label>Admin email</label><input id="sAdminEmail" placeholder="jordan@riverbend.edu" /></div>
         </div>
+        <div class="field"><label>School emblem (optional)</label><input type="file" id="sLogo" accept="image/*" /></div>
         <div id="sErr" class="error" style="display:none;"></div>
         <div id="sSuccess"></div>
         <button class="btn" id="sCreateBtn">Create school</button>
@@ -117,12 +167,16 @@ async function renderSuperAdmin() {
         const errEl = document.getElementById("sErr");
         errEl.style.display = "none";
         try {
+          const fileInput = document.getElementById("sLogo");
+          let logoDataUrl = null;
+          if (fileInput.files[0]) logoDataUrl = await resizeImageToDataUrl(fileInput.files[0], 256);
           const result = await api("/api/superadmin/schools", {
             method: "POST",
             body: JSON.stringify({
               name: document.getElementById("sName").value,
               adminName: document.getElementById("sAdminName").value,
               adminEmail: document.getElementById("sAdminEmail").value,
+              logoDataUrl,
             }),
           });
           document.getElementById("sSuccess").innerHTML = `<p class="success">School created. Share these one-time login details with ${escapeHtml(result.admin.name)}: <br><strong>${escapeHtml(result.admin.email)}</strong> / <code class="code">${escapeHtml(result.admin.tempPassword)}</code></p>`;
@@ -149,9 +203,12 @@ async function loadSchools() {
     listEl.innerHTML = `<div class="grid cols-2">` + schools.map((s) => `
       <div class="card" data-id="${s.id}">
         <div class="row">
-          <div>
-            <h3 style="font-size:17px;">${escapeHtml(s.name)}</h3>
-            <p class="muted">${s.admin ? escapeHtml(s.admin.email) : ""}</p>
+          <div style="display:flex; align-items:center; gap:10px;">
+            ${s.logo_data_url ? `<img src="${s.logo_data_url}" alt="" style="width:38px;height:38px;border-radius:10px;object-fit:cover;" />` : ""}
+            <div>
+              <h3 style="font-size:17px;">${escapeHtml(s.name)}</h3>
+              <p class="muted">${s.admin ? escapeHtml(s.admin.email) : ""}</p>
+            </div>
           </div>
           <span class="badge ${s.status === "active" ? "green" : "rose"}">${s.status === "active" ? "Active" : "Disabled"}</span>
         </div>
@@ -184,6 +241,19 @@ async function loadSchools() {
 async function renderSchoolAdmin() {
   app.style.maxWidth = "880px";
   app.innerHTML = `
+    <div class="card">
+      <div style="display:flex; align-items:center; gap:14px;">
+        <img id="brandLogoPreview" src="${mySchool && mySchool.logoDataUrl ? mySchool.logoDataUrl : ""}" style="width:56px;height:56px;border-radius:14px;object-fit:cover;${mySchool && mySchool.logoDataUrl ? "" : "display:none;"}" />
+        <div>
+          <h3 style="font-size:16px;">School branding</h3>
+          <p class="muted">This emblem and name show in the header for you and your teachers.</p>
+        </div>
+      </div>
+      <div class="field" style="margin-top:12px;"><input type="file" id="brandLogoInput" accept="image/*" /></div>
+      <div id="brandErr" class="error" style="display:none;"></div>
+      <div id="brandSuccess"></div>
+      <button class="btn small" id="brandSaveBtn">Update logo</button>
+    </div>
     <div class="row">
       <div><h2>Staff</h2><p class="muted" style="margin:4px 0 0;">Add teachers so they can build classes and message learners.</p></div>
       <button class="btn" id="newTeacherBtn">Add teacher</button>
@@ -191,6 +261,24 @@ async function renderSchoolAdmin() {
     <div id="teacherForm"></div>
     <div id="staffList"></div>
   `;
+  document.getElementById("brandSaveBtn").addEventListener("click", async () => {
+    const errEl = document.getElementById("brandErr");
+    errEl.style.display = "none";
+    try {
+      const fileInput = document.getElementById("brandLogoInput");
+      if (!fileInput.files[0]) { errEl.textContent = "Choose an image first."; errEl.style.display = "block"; return; }
+      const logoDataUrl = await resizeImageToDataUrl(fileInput.files[0], 256);
+      await api("/api/schooladmin/logo", { method: "PATCH", body: JSON.stringify({ logoDataUrl }) });
+      document.getElementById("brandSuccess").innerHTML = `<p class="success">Logo updated.</p>`;
+      const preview = document.getElementById("brandLogoPreview");
+      preview.src = logoDataUrl;
+      preview.style.display = "";
+      loadSchoolBrand();
+    } catch (e) {
+      errEl.textContent = e.message;
+      errEl.style.display = "block";
+    }
+  });
   document.getElementById("newTeacherBtn").addEventListener("click", () => {
     const holder = document.getElementById("teacherForm");
     holder.innerHTML = holder.innerHTML ? "" : `
@@ -540,9 +628,9 @@ function renderAttendanceTab() {
             <li class="row" data-learner="${r.learner_id}">
               <span>${escapeHtml(r.name)}</span>
               <span>
-                <button class="chip status-chip ${statuses[r.learner_id] === "present" ? "selected" : ""}" data-status="present" style="${statuses[r.learner_id] === "present" ? "background:#047857;color:white;border-color:#047857;" : ""}">Present</button>
-                <button class="chip status-chip ${statuses[r.learner_id] === "late" ? "selected" : ""}" data-status="late" style="${statuses[r.learner_id] === "late" ? "background:#b45309;color:white;border-color:#b45309;" : ""}">Late</button>
-                <button class="chip status-chip ${statuses[r.learner_id] === "absent" ? "selected" : ""}" data-status="absent" style="${statuses[r.learner_id] === "absent" ? "background:#be123c;color:white;border-color:#be123c;" : ""}">Absent</button>
+                <button class="chip status-chip ${statuses[r.learner_id] === "present" ? "selected" : ""}" data-status="present" style="${statuses[r.learner_id] === "present" ? "background:#10b981;color:white;border-color:#10b981;" : ""}">Present</button>
+                <button class="chip status-chip ${statuses[r.learner_id] === "late" ? "selected" : ""}" data-status="late" style="${statuses[r.learner_id] === "late" ? "background:#f59e0b;color:white;border-color:#f59e0b;" : ""}">Late</button>
+                <button class="chip status-chip ${statuses[r.learner_id] === "absent" ? "selected" : ""}" data-status="absent" style="${statuses[r.learner_id] === "absent" ? "background:#f43f5e;color:white;border-color:#f43f5e;" : ""}">Absent</button>
               </span>
             </li>
           `).join("")}
@@ -567,7 +655,7 @@ function renderAttendanceTab() {
   }
 
   function loadRosterRedraw(li, status) {
-    const colors = { present: "#047857", late: "#b45309", absent: "#be123c" };
+    const colors = { present: "#10b981", late: "#f59e0b", absent: "#f43f5e" };
     li.querySelectorAll(".status-chip").forEach((chip) => {
       if (chip.dataset.status === status) {
         chip.style.background = colors[status];
