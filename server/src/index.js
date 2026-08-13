@@ -13,6 +13,7 @@ app.use("/api/auth", require("./routes/auth"));
 app.use("/api/superadmin", require("./routes/superadmin"));
 app.use("/api/schooladmin", require("./routes/schooladmin"));
 app.use("/api/teacher", require("./routes/teacher"));
+app.use("/api/school", require("./routes/school"));
 app.use("/api/public", require("./routes/public"));
 
 app.use(express.static(path.join(__dirname, "..", "public")));
