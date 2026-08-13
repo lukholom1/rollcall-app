@@ -1,17 +1,17 @@
 :root {
   --ink: #0f172a;
 
-  /* Clean white / blue glass */
-  --glass: rgba(255, 255, 255, 0.78);
-  --glass-strong: rgba(255, 255, 255, 0.92);
-  --glass-border: rgba(148, 163, 184, 0.25);
+  /* White glass */
+  --glass: rgba(255, 255, 255, 0.9);
+  --glass-strong: rgba(255, 255, 255, 0.97);
+  --glass-border: rgba(148, 163, 184, 0.22);
 
-  /* Blue accents */
+  /* Blue */
   --accent: #2563eb;
   --accent-2: #3b82f6;
   --accent-dark: #1d4ed8;
 
-  /* Supporting colours */
+  /* Status colours */
   --amber: #f59e0b;
   --rose: #f43f5e;
   --emerald: #10b981;
@@ -21,8 +21,17 @@
   --muted: #64748b;
 }
 
+
+/* =========================================
+   GLOBAL
+   ========================================= */
+
 * {
   box-sizing: border-box;
+}
+
+html {
+  background: #f8fafc;
 }
 
 body {
@@ -40,35 +49,17 @@ body {
   color: var(--text);
 
   /*
-    Clean white background with very subtle
-    blue atmospheric gradients.
+    Clean white background.
+    No purple.
+    No pink.
+    No coloured gradients.
   */
   background:
-    radial-gradient(
-      circle at 10% 10%,
-      rgba(219, 234, 254, 0.9) 0%,
-      transparent 38%
-    ),
-    radial-gradient(
-      circle at 90% 20%,
-      rgba(191, 219, 254, 0.65) 0%,
-      transparent 38%
-    ),
-    radial-gradient(
-      circle at 20% 90%,
-      rgba(224, 242, 254, 0.8) 0%,
-      transparent 42%
-    ),
-    radial-gradient(
-      circle at 90% 90%,
-      rgba(239, 246, 255, 0.9) 0%,
-      transparent 42%
-    ),
     linear-gradient(
-      135deg,
-      #f8fafc 0%,
-      #eff6ff 50%,
-      #ffffff 100%
+      180deg,
+      #ffffff 0%,
+      #f8fbff 50%,
+      #f1f6fc 100%
     );
 
   background-attachment: fixed;
@@ -83,15 +74,15 @@ h3 {
 }
 
 
-/* ================================
+/* =========================================
    HEADER
-   ================================ */
+   ========================================= */
 
 header.top {
-  background: rgba(255, 255, 255, 0.78);
+  background: rgba(255, 255, 255, 0.94);
 
-  backdrop-filter: blur(20px) saturate(140%);
-  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 
   color: var(--ink);
 
@@ -101,14 +92,14 @@ header.top {
   align-items: center;
   justify-content: space-between;
 
-  border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+  border-bottom: 1px solid #e2e8f0;
 
   position: sticky;
   top: 0;
   z-index: 10;
 
   box-shadow:
-    0 4px 20px rgba(15, 23, 42, 0.04);
+    0 2px 12px rgba(15, 23, 42, 0.05);
 }
 
 header.top .brand {
@@ -120,13 +111,15 @@ header.top .brand {
 header.top .mark {
   width: 32px;
   height: 32px;
+
   border-radius: 9px;
 
-  background: linear-gradient(
-    135deg,
-    var(--accent),
-    var(--accent-2)
-  );
+  background:
+    linear-gradient(
+      135deg,
+      var(--accent),
+      var(--accent-2)
+    );
 
   box-shadow:
     0 4px 14px rgba(37, 99, 235, 0.28);
@@ -147,9 +140,9 @@ header.top .who {
 }
 
 
-/* ================================
-   LAYOUT
-   ================================ */
+/* =========================================
+   MAIN
+   ========================================= */
 
 main {
   max-width: 880px;
@@ -158,17 +151,17 @@ main {
 }
 
 
-/* ================================
+/* =========================================
    CARDS
-   ================================ */
+   ========================================= */
 
 .card {
-  background: var(--glass);
+  background: rgba(255, 255, 255, 0.92);
 
-  backdrop-filter: blur(24px) saturate(140%);
-  -webkit-backdrop-filter: blur(24px) saturate(140%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 
-  border: 1px solid var(--glass-border);
+  border: 1px solid #e2e8f0;
 
   border-radius: 20px;
 
@@ -176,14 +169,13 @@ main {
   margin-bottom: 16px;
 
   box-shadow:
-    0 8px 32px rgba(15, 23, 42, 0.08),
-    0 1px 2px rgba(15, 23, 42, 0.04);
+    0 4px 20px rgba(15, 23, 42, 0.06);
 }
 
 
-/* ================================
-   LAYOUT HELPERS
-   ================================ */
+/* =========================================
+   LAYOUT
+   ========================================= */
 
 .row {
   display: flex;
@@ -213,17 +205,26 @@ main {
 }
 
 
-/* ================================
-   FORMS
-   ================================ */
+/* =========================================
+   LABELS
+   ========================================= */
 
 label {
   display: block;
+
   font-size: 13px;
+
   color: var(--muted);
+
   margin-bottom: 4px;
+
   font-weight: 500;
 }
+
+
+/* =========================================
+   INPUTS
+   ========================================= */
 
 input,
 textarea,
@@ -232,17 +233,18 @@ select {
 
   padding: 10px 12px;
 
-  border: 1px solid rgba(100, 116, 139, 0.2);
+  border:
+    1px solid rgba(100, 116, 139, 0.2);
 
   border-radius: 12px;
 
   font-size: 14px;
+
   font-family: inherit;
+
   color: var(--text);
 
-  background: rgba(255, 255, 255, 0.72);
-
-  backdrop-filter: blur(6px);
+  background: #ffffff;
 
   transition:
     border-color 0.15s ease,
@@ -253,7 +255,8 @@ select {
 input:hover,
 textarea:hover,
 select:hover {
-  border-color: rgba(37, 99, 235, 0.3);
+  border-color:
+    rgba(37, 99, 235, 0.35);
 }
 
 input:focus,
@@ -266,13 +269,14 @@ select:focus {
   box-shadow:
     0 0 0 3px rgba(37, 99, 235, 0.12);
 
-  background: rgba(255, 255, 255, 0.95);
+  background: #ffffff;
 }
 
 input[type="file"] {
-  background: transparent;
+  background: #ffffff;
 
-  border: 1px dashed rgba(100, 116, 139, 0.3);
+  border:
+    1px dashed rgba(100, 116, 139, 0.3);
 
   padding: 10px;
 }
@@ -287,16 +291,17 @@ button {
 }
 
 
-/* ================================
+/* =========================================
    BUTTONS
-   ================================ */
+   ========================================= */
 
 .btn {
-  background: linear-gradient(
-    135deg,
-    var(--accent),
-    var(--accent-2)
-  );
+  background:
+    linear-gradient(
+      135deg,
+      var(--accent),
+      var(--accent-2)
+    );
 
   color: white;
 
@@ -307,10 +312,11 @@ button {
   border-radius: 999px;
 
   font-size: 14px;
+
   font-weight: 600;
 
   box-shadow:
-    0 6px 18px rgba(37, 99, 235, 0.25);
+    0 6px 18px rgba(37, 99, 235, 0.22);
 
   transition:
     transform 0.15s ease,
@@ -322,27 +328,33 @@ button {
   transform: translateY(-1px);
 
   box-shadow:
-    0 8px 22px rgba(37, 99, 235, 0.32);
+    0 8px 22px rgba(37, 99, 235, 0.3);
 
   filter: brightness(1.03);
 }
 
 .btn:disabled {
   opacity: 0.5;
+
   cursor: not-allowed;
+
   transform: none;
+
   box-shadow: none;
 }
 
 
-/* Ghost button */
+/* =========================================
+   GHOST BUTTON
+   ========================================= */
 
 .btn.ghost {
-  background: rgba(255, 255, 255, 0.68);
+  background: #ffffff;
 
   color: var(--text);
 
-  border: 1px solid rgba(100, 116, 139, 0.2);
+  border:
+    1px solid #dbe2ea;
 
   backdrop-filter: blur(10px);
 
@@ -350,9 +362,10 @@ button {
 }
 
 .btn.ghost:hover {
-  background: rgba(255, 255, 255, 0.92);
+  background: #f8fafc;
 
-  border-color: rgba(37, 99, 235, 0.25);
+  border-color:
+    rgba(37, 99, 235, 0.3);
 
   color: var(--accent-dark);
 
@@ -360,23 +373,33 @@ button {
 }
 
 
-/* Danger button */
+/* =========================================
+   DANGER BUTTON
+   ========================================= */
 
 .btn.danger {
-  background: rgba(244, 63, 94, 0.08);
+  background:
+    rgba(244, 63, 94, 0.07);
 
   color: #be123c;
 
-  border: 1px solid rgba(244, 63, 94, 0.25);
+  border:
+    1px solid rgba(244, 63, 94, 0.25);
 
   box-shadow: none;
 }
 
 .btn.danger:hover {
-  background: rgba(244, 63, 94, 0.13);
+  background:
+    rgba(244, 63, 94, 0.12);
 
   transform: none;
 }
+
+
+/* =========================================
+   SMALL BUTTON
+   ========================================= */
 
 .btn.small {
   padding: 6px 12px;
@@ -384,12 +407,13 @@ button {
 }
 
 
-/* ================================
+/* =========================================
    BADGES
-   ================================ */
+   ========================================= */
 
 .badge {
   display: inline-flex;
+
   align-items: center;
 
   padding: 4px 11px;
@@ -397,6 +421,7 @@ button {
   border-radius: 999px;
 
   font-size: 11px;
+
   font-weight: 600;
 
   border: 1px solid;
@@ -405,41 +430,49 @@ button {
 }
 
 .badge.green {
-  background: rgba(16, 185, 129, 0.1);
+  background:
+    rgba(16, 185, 129, 0.1);
 
   color: #047857;
 
-  border-color: rgba(16, 185, 129, 0.28);
+  border-color:
+    rgba(16, 185, 129, 0.28);
 }
 
 .badge.rose {
-  background: rgba(244, 63, 94, 0.1);
+  background:
+    rgba(244, 63, 94, 0.1);
 
   color: #be123c;
 
-  border-color: rgba(244, 63, 94, 0.28);
+  border-color:
+    rgba(244, 63, 94, 0.28);
 }
 
 .badge.amber {
-  background: rgba(245, 158, 11, 0.1);
+  background:
+    rgba(245, 158, 11, 0.1);
 
   color: #92400e;
 
-  border-color: rgba(245, 158, 11, 0.3);
+  border-color:
+    rgba(245, 158, 11, 0.3);
 }
 
 .badge.slate {
-  background: rgba(100, 116, 139, 0.1);
+  background:
+    rgba(100, 116, 139, 0.1);
 
   color: #334155;
 
-  border-color: rgba(100, 116, 139, 0.25);
+  border-color:
+    rgba(100, 116, 139, 0.25);
 }
 
 
-/* ================================
-   TEXT STATES
-   ================================ */
+/* =========================================
+   TEXT
+   ========================================= */
 
 .muted {
   color: var(--muted);
@@ -459,13 +492,15 @@ button {
 }
 
 
-/* ================================
-   LISTS
-   ================================ */
+/* =========================================
+   LIST
+   ========================================= */
 
 .list {
   list-style: none;
+
   margin: 0;
+
   padding: 0;
 }
 
@@ -481,9 +516,9 @@ button {
 }
 
 
-/* ================================
+/* =========================================
    EMPTY STATE
-   ================================ */
+   ========================================= */
 
 .empty {
   text-align: center;
@@ -497,24 +532,28 @@ button {
 
   color: var(--muted);
 
-  background: rgba(255, 255, 255, 0.5);
+  background:
+    rgba(255, 255, 255, 0.75);
 
   backdrop-filter: blur(14px);
 }
 
 .empty h3 {
   color: var(--text);
+
   font-size: 16px;
+
   margin-bottom: 4px;
 }
 
 
-/* ================================
+/* =========================================
    TABS
-   ================================ */
+   ========================================= */
 
 .tabs {
   display: flex;
+
   gap: 4px;
 
   border-bottom:
@@ -532,9 +571,11 @@ button {
 
   font-size: 14px;
 
-  color: rgba(30, 41, 59, 0.6);
+  color:
+    rgba(30, 41, 59, 0.6);
 
-  border-bottom: 2px solid transparent;
+  border-bottom:
+    2px solid transparent;
 
   margin-bottom: -1px;
 
@@ -552,15 +593,16 @@ button {
 .tabs button.active {
   color: var(--accent-dark);
 
-  border-bottom-color: var(--accent);
+  border-bottom-color:
+    var(--accent);
 
   font-weight: 700;
 }
 
 
-/* ================================
+/* =========================================
    CHIPS
-   ================================ */
+   ========================================= */
 
 .chip {
   display: inline-block;
@@ -576,7 +618,7 @@ button {
 
   margin: 0 6px 6px 0;
 
-  background: rgba(255, 255, 255, 0.65);
+  background: #ffffff;
 
   backdrop-filter: blur(6px);
 
@@ -586,7 +628,8 @@ button {
 }
 
 .chip:hover {
-  border-color: rgba(37, 99, 235, 0.3);
+  border-color:
+    rgba(37, 99, 235, 0.3);
 }
 
 .chip.selected {
@@ -606,14 +649,16 @@ button {
 }
 
 
-/* ================================
+/* =========================================
    CODE
-   ================================ */
+   ========================================= */
 
 code.code {
-  background: rgba(37, 99, 235, 0.08);
+  background:
+    rgba(37, 99, 235, 0.08);
 
-  color: #1d4ed8;
+  color:
+    #1d4ed8;
 
   padding: 2px 8px;
 
@@ -624,4 +669,29 @@ code.code {
   font-weight: 600;
 
   letter-spacing: 1px;
+}
+
+
+/* =========================================
+   MOBILE
+   ========================================= */
+
+@media (max-width: 640px) {
+  header.top {
+    padding: 12px 16px;
+  }
+
+  main {
+    padding: 16px;
+  }
+
+  .card {
+    padding: 16px;
+
+    border-radius: 16px;
+  }
+
+  .row {
+    flex-wrap: wrap;
+  }
 }
