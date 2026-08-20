@@ -1,15 +1,21 @@
 :root {
   --ink: #0f172a;
 
-  /* White glass */
+  /* White glass (light surfaces, e.g. dashboard/login on the pale wash) */
   --glass: rgba(255, 255, 255, 0.9);
   --glass-strong: rgba(255, 255, 255, 0.97);
   --glass-border: rgba(148, 163, 184, 0.22);
+
+  /* Dark glass (surfaces floating over the campus photo) */
+  --glass-dark: rgba(15, 23, 42, 0.38);
+  --glass-dark-strong: rgba(15, 23, 42, 0.5);
+  --glass-dark-border: rgba(255, 255, 255, 0.22);
 
   /* Blue */
   --accent: #2563eb;
   --accent-2: #3b82f6;
   --accent-dark: #1d4ed8;
+  --accent-glow: rgba(37, 99, 235, 0.55);
 
   /* Status colours */
   --amber: #f59e0b;
@@ -114,12 +120,7 @@ header.top .mark {
 
   border-radius: 9px;
 
-  background:
-    linear-gradient(
-      135deg,
-      var(--accent),
-      var(--accent-2)
-    );
+  background: var(--accent);
 
   box-shadow:
     0 4px 14px rgba(37, 99, 235, 0.28);
@@ -131,6 +132,14 @@ header.top .mark {
   font-family: Georgia, serif;
   font-size: 14px;
   color: white;
+
+  transition: box-shadow 0.2s ease;
+}
+
+header.top .mark:hover {
+  box-shadow:
+    0 0 0 4px rgba(37, 99, 235, 0.14),
+    0 4px 18px rgba(37, 99, 235, 0.4);
 }
 
 header.top .who {
@@ -156,12 +165,12 @@ main {
    ========================================= */
 
 .card {
-  background: rgba(255, 255, 255, 0.92);
+  background: rgba(255, 255, 255, 0.86);
 
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(22px) saturate(160%);
+  -webkit-backdrop-filter: blur(22px) saturate(160%);
 
-  border: 1px solid #e2e8f0;
+  border: 1px solid rgba(255, 255, 255, 0.6);
 
   border-radius: 20px;
 
@@ -169,7 +178,8 @@ main {
   margin-bottom: 16px;
 
   box-shadow:
-    0 4px 20px rgba(15, 23, 42, 0.06);
+    0 4px 24px rgba(15, 23, 42, 0.07),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
 }
 
 
@@ -296,16 +306,11 @@ button {
    ========================================= */
 
 .btn {
-  background:
-    linear-gradient(
-      135deg,
-      var(--accent),
-      var(--accent-2)
-    );
+  background: var(--accent);
 
   color: white;
 
-  border: none;
+  border: 1px solid var(--accent);
 
   padding: 10px 18px;
 
@@ -316,21 +321,27 @@ button {
   font-weight: 600;
 
   box-shadow:
-    0 6px 18px rgba(37, 99, 235, 0.22);
+    0 4px 14px rgba(37, 99, 235, 0.18);
 
   transition:
     transform 0.15s ease,
-    box-shadow 0.15s ease,
-    filter 0.15s ease;
+    box-shadow 0.2s ease,
+    background 0.15s ease;
 }
 
 .btn:hover {
   transform: translateY(-1px);
 
-  box-shadow:
-    0 8px 22px rgba(37, 99, 235, 0.3);
+  background: var(--accent-dark);
 
-  filter: brightness(1.03);
+  /* Hover glow, no gradient */
+  box-shadow:
+    0 0 0 5px rgba(37, 99, 235, 0.14),
+    0 8px 26px var(--accent-glow);
+}
+
+.btn:active {
+  transform: translateY(0);
 }
 
 .btn:disabled {
@@ -365,11 +376,14 @@ button {
   background: #f8fafc;
 
   border-color:
-    rgba(37, 99, 235, 0.3);
+    rgba(37, 99, 235, 0.4);
 
   color: var(--accent-dark);
 
   transform: none;
+
+  box-shadow:
+    0 0 0 5px rgba(37, 99, 235, 0.1);
 }
 
 
@@ -394,6 +408,9 @@ button {
     rgba(244, 63, 94, 0.12);
 
   transform: none;
+
+  box-shadow:
+    0 0 0 5px rgba(244, 63, 94, 0.1);
 }
 
 
@@ -633,19 +650,20 @@ button {
 }
 
 .chip.selected {
-  background:
-    linear-gradient(
-      135deg,
-      var(--accent),
-      var(--accent-2)
-    );
+  background: var(--accent);
 
   color: white;
 
-  border-color: transparent;
+  border-color: var(--accent);
 
   box-shadow:
-    0 4px 12px rgba(37, 99, 235, 0.25);
+    0 0 0 4px rgba(37, 99, 235, 0.14),
+    0 4px 14px rgba(37, 99, 235, 0.25);
+}
+
+.chip:hover {
+  box-shadow:
+    0 0 0 4px rgba(37, 99, 235, 0.08);
 }
 
 
@@ -671,6 +689,261 @@ code.code {
   letter-spacing: 1px;
 }
 
+
+/* =========================================
+   LANDING · HERO (photo background, dark glass)
+   ========================================= */
+
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #0b1220;
+}
+
+.hero-photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 30%;
+}
+
+.hero-scrim {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(9, 14, 28, 0.55) 0%,
+      rgba(9, 14, 28, 0.35) 38%,
+      rgba(9, 14, 28, 0.72) 100%
+    );
+}
+
+.hero-nav {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 28px;
+}
+
+.hero-nav .brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #f8fafc;
+}
+
+.hero-nav .brand .mark {
+  background: var(--accent);
+}
+
+.hero-main {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  padding: 24px;
+}
+
+.hero-panel {
+  width: 100%;
+  max-width: 620px;
+
+  background: var(--glass-dark);
+  backdrop-filter: blur(22px) saturate(160%);
+  -webkit-backdrop-filter: blur(22px) saturate(160%);
+
+  border: 1px solid var(--glass-dark-border);
+  border-radius: 24px;
+
+  padding: 36px;
+  margin-bottom: 48px;
+
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.16);
+
+  color: #f8fafc;
+}
+
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+
+  color: #bfdbfe;
+
+  margin-bottom: 14px;
+}
+
+.hero-panel h1 {
+  color: #ffffff;
+  font-size: 40px;
+  line-height: 1.1;
+  margin-bottom: 14px;
+}
+
+.hero-panel p.lead {
+  color: rgba(248, 250, 252, 0.86);
+  font-size: 16px;
+  line-height: 1.6;
+  margin: 0 0 24px;
+  max-width: 46ch;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.btn.on-glass {
+  background: #ffffff;
+  color: var(--accent-dark);
+  border: 1px solid #ffffff;
+}
+
+.btn.on-glass:hover {
+  background: #eef4ff;
+  box-shadow:
+    0 0 0 5px rgba(255, 255, 255, 0.18),
+    0 8px 26px rgba(0, 0, 0, 0.25);
+}
+
+.btn.ghost.on-glass {
+  background: rgba(255, 255, 255, 0.08);
+  color: #f8fafc;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+}
+
+.btn.ghost.on-glass:hover {
+  background: rgba(255, 255, 255, 0.16);
+  color: #ffffff;
+  box-shadow:
+    0 0 0 5px rgba(255, 255, 255, 0.12);
+}
+
+/* =========================================
+   LANDING · FEATURES (light section below the fold)
+   ========================================= */
+
+.features {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 64px 24px 80px;
+}
+
+.features .kicker {
+  text-align: center;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.features h2 {
+  text-align: center;
+  font-size: 28px;
+  margin-bottom: 40px;
+}
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 800px) {
+  .feature-grid { grid-template-columns: 1fr; }
+  .hero-panel { padding: 26px; margin: 0 0 28px; }
+  .hero-panel h1 { font-size: 30px; }
+}
+
+.feature-card {
+  background: rgba(255, 255, 255, 0.86);
+  backdrop-filter: blur(18px) saturate(150%);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 20px;
+  padding: 22px;
+  box-shadow:
+    0 4px 20px rgba(15, 23, 42, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.feature-card .icon-tile {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: rgba(37, 99, 235, 0.1);
+  border: 1px solid rgba(37, 99, 235, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+  font-size: 18px;
+}
+
+.feature-card h3 {
+  font-size: 16px;
+  margin-bottom: 6px;
+}
+
+.feature-card p {
+  color: var(--muted);
+  font-size: 13.5px;
+  line-height: 1.55;
+  margin: 0;
+}
+
+/* Signature: a live-looking roll-call strip, echoing the real
+   present/late/absent chips teachers tap on the dashboard. */
+.rollcall-strip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.rollcall-strip .name-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  color: #f1f5f9;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 5px 10px 5px 8px;
+  border-radius: 999px;
+}
+
+.rollcall-strip .dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+
+.dot.present { background: var(--emerald); box-shadow: 0 0 8px rgba(16,185,129,0.8); }
+.dot.late    { background: var(--amber);   box-shadow: 0 0 8px rgba(245,158,11,0.8); }
+.dot.absent  { background: var(--rose);    box-shadow: 0 0 8px rgba(244,63,94,0.8); }
 
 /* =========================================
    MOBILE
